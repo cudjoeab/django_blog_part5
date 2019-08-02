@@ -37,11 +37,14 @@ def create_comment(request):
     #     return render(request, 'show.html', context)
 
     
-    # new_comment = Comment()
-    # new_comment.name = request.POST['name']
-    # new_comment.message = request.POST['message']
-    # new_comment.article = article
-    # new_comment.save()
-    # context = {'article': article}
-    # response = render(request, 'show.html', context)
-    # return HttpResponse(response) 
+def create_article(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            new_article = form.save(commit=False)
+            new_blog.save()
+            return redirect('home/')
+    else:
+        form=ArticleForm()
+    html_response = render(request, 'create_article.html', {'form': form})
+    return HttpResponse(html_response)

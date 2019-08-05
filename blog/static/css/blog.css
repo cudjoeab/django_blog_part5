@@ -63,7 +63,7 @@ ul {
     grid-template-rows: 1fr 1fr;
 }
 /* make sticky notes https://code.tutsplus.com/tutorials/create-a-sticky-note-effect-in-5-easy-steps-with-css3-and-html5--net-13934 */
-.comments {
+ul li{
     overflow: hidden;
     text-decoration:none;
     color:#000;

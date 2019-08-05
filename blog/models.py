@@ -10,10 +10,14 @@ class Article(models.Model):
     body = models.TextField(validators = [MinLengthValidator(1)], null=True)
     draft = models.BooleanField(default=True)
     published_date= models.DateTimeField(default=datetime.now, blank=True)
-    author= models.CharField(max_length=255)
 
     def __str__(self):
         return (f'{self.title}, By: {self.author}') 
+
+class ArticleForm(ModelForm):
+    class Meta:
+        model = Article
+        fields = ['title', 'author','body','draft','published_date']
 
 class Comment(models.Model):
     name = models.CharField(max_length=255)

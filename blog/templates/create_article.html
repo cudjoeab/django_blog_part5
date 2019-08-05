@@ -3,11 +3,14 @@
 {% block content %}
 
     <h2>New post</h2>
-    <form action="{% url 'create_article' %}" method="post">
+    <form action="{% url 'create_article' %}" method="POST">
       {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Post</button>
+      <p>     
+        {{ form.as_p }}
+      </p> 
+
+      <input type="submit" value="Post Article"/>
     </form>
-    <a href="{% url 'home_page' %}">All Blog's</a>
+    <a href="{% url 'home_page' %}">All Articles</a>
     
 {% endblock %} 

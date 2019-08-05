@@ -3,7 +3,7 @@
 {% block content %}
 
     {% for article in articles %}
-    <a href="{% url 'full_blog' id=article.pk %}"> 
+    <a href="{% url 'full_article' id=article.pk %}"> 
             <body>
         {% if article.draft == False %} 
             <article>

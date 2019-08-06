@@ -14,7 +14,15 @@
     <header>
             <h1>Getting down with Django</h2> 
             <h2>Date: {{ current_time }}</h2>
-            <h3> <a href="{% url 'new_article' %}"> Post an article</a></h3>
+
+            {% if request.user.is_authenticated %}
+                <h3>Logged in as {{ request.user.username }}</h3>
+                <li><a href="{% url 'new_article' %}">Post an article</a></li>
+                <li><a href="{% url 'logout' %}">Log out</a></li>
+            {% else %}
+                <li><a href="#">Sign up!</a></li>
+                <li><a href="{% url 'login' %}">Log in</a></li>
+            {% endif %}
     </header>
 
     <main>

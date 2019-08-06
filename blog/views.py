@@ -1,7 +1,13 @@
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect 
-from django.shortcuts import render, redirect 
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse 
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
+from django.shortcuts import redirect
+
+
 from blog.models import Article, Comment, CommentForm, ArticleForm
 
 def root(request):
@@ -21,12 +27,17 @@ def show_article(request, id):
     context = {'article': article, 'form': form}
     return render(request, 'article.html', context)
 
+@login_required
 def new_article(request):
-    form = ArticleForm()
-    context = {"form": form}
-    return render(request, 'create_article.html', context)
+    if request.user.has_perm('blog.create_article'):
+        form = ArticleForm()
+        context = {"form": form }
+        response = render(request, 'create_article.html', context)
+        return HttpResponse(response)
+    else:
+        return redirect(reverse('home_page'))
    
-     
+@login_required   
 def create_article(request): #saving article to database 
         form = ArticleForm(request.POST)
         context = {"form": form}
@@ -37,12 +48,15 @@ def create_article(request): #saving article to database
             context = {"form": form}
             return render(request, 'create_article.html', context)
 
+@login_required
 def edit_article(request, id):  # Renders a form to edit an existing article.
     article = Article.objects.get(pk=id)
     form = ArticleForm(instance=article)
     context = {"product":article, "form": form}
     return render(request, "edit_article_form.html", context)
 
+
+@login_required
 def update_article(request, id):  # User updating an existing product.
     article = Article.objects.get(pk=id)
     form = ArticleForm(request.POST, instance=article)
@@ -54,11 +68,13 @@ def update_article(request, id):  # User updating an existing product.
         context = {"article": article, "form": form}
         return render(request, "edit_article_form.html", context)
 
+@login_required
 def delete_article(request, id):  # User deleting an existing product.
     article = Article.objects.get(pk=id)
     article.delete()
     return redirect(reverse("home_page"))
 
+@login_required
 def create_comment(request):
     article_id = request.POST['article']
     article = Article.objects.get(id=article_id)
@@ -70,6 +86,7 @@ def create_comment(request):
     form = CommentForm()
     return render(request, 'article.html', context)
 
+@login_required
 def edit_comment(request, article_id, comment_id):
     article = Article.objects.get(pk=product_id)
     comment = Review.objects.get(pk=product_id)
@@ -78,9 +95,11 @@ def edit_comment(request, article_id, comment_id):
     context = {"comment": comment, "form": form, "article": article}
     return render(request, "edit_comment_form.html", context)
 
+@login_required
 def update_comment(request, article_id, comment_id): 
     comment = Comment.objects.get(pk=review_id)
     form = CommentForm(request.POST, instance=comment)
+    context = {"form": form, "comment": comment}
     if form.is_valid():
         form.save()
         return render(request, 'article.html', context)
@@ -88,7 +107,15 @@ def update_comment(request, article_id, comment_id):
         context = {"comment": comment, "form": form, "product": product}
         return render(request, "edit_comment_form.html", context)
 
+@login_required
 def delete_comment(request, article_id, comment_id):
     comment = Comment.objects.get(pk=comment_id)
     comment.delete()
     return redirect(reverse("article.html", kwargs={"id":article_id}))
+
+
+def signup(request):
+    form = UserCreationForm()
+    context = {'form' : form }
+    response = render(request, 'registration/signup.html', context)
+    return HttpResponse(response)

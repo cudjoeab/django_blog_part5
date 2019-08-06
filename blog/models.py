@@ -11,8 +11,8 @@ class Article(models.Model):
     body = models.TextField(validators = [MinLengthValidator(1)], null=True)
     draft = models.BooleanField(default=True)
     published_date= models.DateTimeField(default=datetime.now, blank=True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user", default="1" )
-    # ^ TODO: figure out error with user and adding a default. 
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    
 
     def __str__(self):
         return (f'{self.title}, By: {self.author}') 

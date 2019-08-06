@@ -52,24 +52,24 @@ def create_article(request): #saving article to database
 def edit_article(request, id):  # Renders a form to edit an existing article.
     article = Article.objects.get(pk=id)
     form = ArticleForm(instance=article)
-    context = {"product":article, "form": form}
+    context = {"article":article, "form": form}
     return render(request, "edit_article_form.html", context)
 
 
 @login_required
-def update_article(request, id):  # User updating an existing product.
+def update_article(request, id):  # User updating an existing article.
     article = Article.objects.get(pk=id)
     form = ArticleForm(request.POST, instance=article)
     context = {"article": article, "form": form}
     if form.is_valid():
         form.save()
         return render(request, 'index.html', context)
-    else:  # Else sends user back to existing product form.
+    else:  # Else sends user back to existing article form.
         context = {"article": article, "form": form}
         return render(request, "edit_article_form.html", context)
 
 @login_required
-def delete_article(request, id):  # User deleting an existing product.
+def delete_article(request, id):  # User deleting an existing article.
     article = Article.objects.get(pk=id)
     article.delete()
     return redirect(reverse("home_page"))
@@ -79,17 +79,19 @@ def create_comment(request):
     article_id = request.POST['article']
     article = Article.objects.get(id=article_id)
     form = CommentForm(request.POST)
-    new_comment = form.save(commit=False)
-    new_comment.article = article
-    context = {"form": form, "message": "Add a comment.", "action": "/comments/create", "article": article}
-    form.save()
-    form = CommentForm()
-    return render(request, 'article.html', context)
+    if form.is_valid(): 
+        new_comment = form.save(commit=False)
+        new_comment.article = article
+        context = {"form": form, "message": "Add a comment.", "action": "/comments/create", "article": article}
+        form.save()
+        return redirect(reverse('full_article', args=[article_id]))
+    else: 
+        return render(request, 'article.html', context)
 
 @login_required
 def edit_comment(request, article_id, comment_id):
-    article = Article.objects.get(pk=product_id)
-    comment = Review.objects.get(pk=product_id)
+    article = Article.objects.get(pk=article_id)
+    comment = Review.objects.get(pk=comment_id)
     comment.article_id = comment_id
     form = CommentForm(instance=comment)
     context = {"comment": comment, "form": form, "article": article}
@@ -97,14 +99,15 @@ def edit_comment(request, article_id, comment_id):
 
 @login_required
 def update_comment(request, article_id, comment_id): 
-    comment = Comment.objects.get(pk=review_id)
+    article = Article.objects.get(pk=article_id)
+    comment = Comment.objects.get(pk=comment_id)
     form = CommentForm(request.POST, instance=comment)
-    context = {"form": form, "comment": comment}
+    context = {"form": form}
     if form.is_valid():
         form.save()
-        return render(request, 'article.html', context)
+        return redirect(reverse('full_article', args=[article_id]))
     else: 
-        context = {"comment": comment, "form": form, "product": product}
+        context = {"comment": comment, "form": form, "article": article}
         return render(request, "edit_comment_form.html", context)
 
 @login_required

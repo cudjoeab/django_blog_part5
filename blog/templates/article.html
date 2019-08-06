@@ -9,7 +9,7 @@
     <p> {{ article.body }} </p>
     
     <h4> 
-        <a href="#"> [EDIT] </a>
+        <a href="{% url 'edit_article' id=article.pk %}"> [EDIT] </a>
         <a href="#"> [DELETE] </a>
     
     </h4>
